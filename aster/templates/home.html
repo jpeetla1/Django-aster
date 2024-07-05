@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ASTER</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            height: 100vh;
+            margin: 0;
+            background: linear-gradient(
+                45deg,
+                hsl(242deg 25% 20%) 0%,
+                hsl(222deg 31% 20%) 9%,
+                hsl(209deg 39% 20%) 18%,
+                hsl(210deg 37% 25%) 27%,
+                hsl(247deg 24% 42%) 36%,
+                hsl(265deg 39% 56%) 45%,
+                hsl(271deg 55% 67%) 55%,
+                hsl(274deg 51% 76%) 64%,
+                hsl(279deg 43% 84%) 73%,
+                hsl(215deg 51% 88%) 82%,
+                hsl(188deg 82% 83%) 91%,
+                hsl(180deg 100% 77%) 100%
+            );
+        }
+        header {
+            text-align: center;
+            padding: 20px;
+            background-color: #f0f0f0;
+            width: 100%;
+        }
+        .content {
+            flex: 1;
+            display: flex;
+            align-items: flex-start;
+            justify-content: flex-start;
+            width: 100%;
+            padding: 20px;
+        }
+        .help-box {
+            border: 1px solid #ccc;
+            padding: 20px;
+            background-color: #f9f9f9;
+            border-radius: 5px;
+            margin-left: 20px;
+        }
+        .input-area {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            background-color: #f0f0f0;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border-top: 1px solid #ddd;
+            position: fixed;
+            bottom: 0;
+        }
+        .input-area input[type="text"] {
+            width: 60%;
+            padding: 10px 15px;
+            margin-right: 10px;
+            border: 1px solid #ccc;
+            border-radius: 20px;
+            font-size: 16px;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+            outline: none;
+        }
+        .input-area button {
+            width: 40px;
+            height: 40px;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 20px;
+            margin: 0 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.3s, transform 0.3s;
+        }
+        .input-area button:hover {
+            transform: scale(1.1);
+        }
+        .start-btn {
+            background-color: #4CAF50;
+            color: white;
+        }
+        .stop-btn {
+            background-color: #f44336;
+            color: white;
+        }
+        .arrow-btn {
+            background-color: #008CBA;
+            color: white;
+        }
+        .center-animation {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+        ul {
+            display: flex;
+            gap: 3px;
+        }
+        ul li {
+            list-style: none;
+            width: 6px;
+            height: 20px;
+            background: #4CAF50;
+            margin: 0 4px;
+            animation: animate .7s infinite alternate;
+        }
+        @keyframes animate {
+            0%, 25%, 50%, 75% { transform: scaleY(1); }
+            100% { transform: scaleY(3); }
+        }
+        ul li:nth-child(1) { animation-delay: .1s; }
+        ul li:nth-child(2) { animation-delay: .2s; }
+        ul li:nth-child(3) { animation-delay: .3s; }
+        ul li:nth-child(4) { animation-delay: .4s; }
+        ul li:nth-child(5) { animation-delay: .5s; }
+        ul li:nth-child(6) { animation-delay: .6s; }
+        .loader {
+            width: 28px;
+            aspect-ratio: 1;
+            border-radius: 50%;
+            background: #E3AAD6;
+            transform-origin: top;
+            display: grid;
+            animation: l3-0 1s infinite linear;
+        }
+        .loader::before,
+        .loader::after {
+            content: "";
+            grid-area: 1/1;
+            background: #F4DD51;
+            border-radius: 50%;
+            transform-origin: top;
+            animation: inherit;
+            animation-name: l3-1;
+        }
+        .loader::after {
+            background: #F10C49;
+            --s: 180deg;
+        }
+        @keyframes l3-0 {
+            0%, 20% { transform: rotate(0); }
+            100% { transform: rotate(360deg); }
+        }
+        @keyframes l3-1 {
+            50% { transform: rotate(var(--s, 90deg)); }
+            100% { transform: rotate(0); }
+        }
+        img {
+            max-width: 130px;
+            max-height: 130px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="content">
+        <div class="help-box">
+            <p>How can I help you?</p>
+        </div>
+    </div>
+    <div class="input-area">
+        <input type="text" placeholder="Type your command here..." id="commandInput">
+        <button id="start" class="start-btn">▶</button>
+        <button id="stop" class="stop-btn">■</button>
+        <button class="arrow-btn">↑</button>
+        <div class="center-animation" id="animationContainer">
+            <ul id="soundWave">
+                <li></li>
+                <li></li>
+                <li></li>
+                <li></li>
+                <li></li>
+                <li></li>
+            </ul>
+            <div class="loading-animation" id="loadingText" style="display: none;">
+                <div class="loader"></div>
+            </div>
+        </div>
+    </div>
+    <script>
+
+            let mediaRecorder;
+        let audioChunks = [];
+
+        async function startFunction() {
+            document.getElementById('soundWave').style.display = 'flex';
+            document.getElementById('loadingText').style.display = 'none';
+            document.getElementById('animationContainer').style.display = 'flex';
+
+            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            mediaRecorder = new MediaRecorder(stream);
+
+            mediaRecorder.ondataavailable = event => {
+                audioChunks.push(event.data);
+            };
+
+            mediaRecorder.start();
+        }
+
+        function stopFunction() {
+            document.getElementById('soundWave').style.display = 'none';
+            document.getElementById('loadingText').style.display = 'block';
+            mediaRecorder.stop();
+            mediaRecorder.onstop = async () => {
+                const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
+                audioChunks = [];
+
+                // Convert the Blob to a Base64 string
+                const reader = new FileReader();
+                reader.readAsDataURL(audioBlob);
+                reader.onloadend = async () => {
+                    const csrftoken = getCookie('csrftoken');
+                    const base64String = reader.result.split(',')[1];
+
+                    // Send the Base64 string to the server
+                    const response = await fetch('recording_info/', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': csrftoken
+                        },
+                        body: JSON.stringify({ audio: base64String })
+                    });
+
+                    if (response.ok) {
+                        const responseData = await response.text();
+                        document.open();
+                        document.write(responseData);
+                        document.close();
+                    }
+
+                    else {
+                        alert("Failed to upload audio");
+                    }
+                };
+            };
+        }
+
+        document.getElementById("start").addEventListener("click", startFunction);
+        document.getElementById("stop").addEventListener("click", stopFunction);
+
+
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            // Does this cookie string begin with the name we want?
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+    </script>
+</body>
+</html>
